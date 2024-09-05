@@ -1,8 +1,7 @@
 import React from "react";
 import Sidebar from "./Sidebar";
-import ChatWindown from "./ChatWindown";
-import { Row, Col, Button } from "antd";
-import { MenuOutlined } from "@ant-design/icons";
+import ChatWindown from "./ChatWindow";
+import { Row, Col } from "antd";
 
 export default function ChatRoom() {
   return (
@@ -11,9 +10,6 @@ export default function ChatRoom() {
         <Sidebar />
       </Col>
       <Col span={18}>
-        <div style={{ display: "block", padding: "20px 10px" }}>
-          <Button ghost icon={<MenuOutlined />} />
-        </div>
         <ChatWindown />
       </Col>
     </Row>
