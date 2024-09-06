@@ -9,7 +9,7 @@ const WrapperStyled = styled.div`
   min-width: 100px;
 
   .avatar {
-    margin-top: 2px;
+    margin-top: 1px;
   }
 
   .author {
@@ -34,7 +34,7 @@ function Message({ text, displayName, createdAt, photoURL }) {
   return (
     <WrapperStyled>
       <div>
-        <Avatar className="avatar" size="large" shape="square" src={photoURL} />
+        <Avatar className="avatar" size="default" shape="circle" src={photoURL} />
       </div>
 
       <div>

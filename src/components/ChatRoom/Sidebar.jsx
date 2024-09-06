@@ -5,8 +5,7 @@ import RoomList from "./RoomList";
 import styled from "styled-components";
 
 const SidebarStyle = styled.div`
-  background-color: var(--primary-color);
-  color: var(--text-color-secondary);
+  background: linear-gradient(to bottom, #614385, #516395);
   height: 100vh;
 `;
 

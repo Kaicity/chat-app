@@ -9,20 +9,20 @@ export const AuthContext = createContext();
 function AuthProvider({ children }) {
   const [user, setUser] = useState({});
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const handleAuthStateChange = (user) => {
       setIsLoading(true);
       if (user) {
-        console.log(user);
         const { uid, displayName, email, photoURL } = user;
         setUser({ uid, displayName, email, photoURL });
+        setIsLoading(false);
         navigate("/");
-      } else {
-        setUser({});
-        navigate("/login");
+        return;
       }
+      setIsLoading(false);
+      navigate("/login");
       setTimeout(() => setIsLoading(false), 1000);
     };
 

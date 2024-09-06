@@ -21,6 +21,7 @@ const WrapperStyle = styled.div`
   }
 
   .username {
+    color: var(--text-color-primary);
     font-weight: bold;
     font-size: 14px;
     margin-left: 10px;
@@ -49,7 +50,7 @@ function UserInfo() {
         />
         <Typography.Text className="username">THONGULAR</Typography.Text>
       </div>
-      <Button className="btn-logout" onClick={handleLogout}>
+      <Button ghost className="btn-logout" onClick={handleLogout}>
         Đăng xuất
       </Button>
     </WrapperStyle>

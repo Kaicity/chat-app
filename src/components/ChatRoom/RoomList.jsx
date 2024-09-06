@@ -9,13 +9,14 @@ const PanelStyled = styled(Panel)`
   &&& {
     .ant-collapse-header,
     p {
-      
+      color: var(--text-color-primary);
     }
     .ant-collapse-content-box {
       padding: 0 40px;
     }
     .add-room {
-      padding: 5px;
+      padding: 0;
+      color: var(--text-color-primary);
     }
   }
 `;
@@ -25,13 +26,10 @@ const TypographyStyled = styled(Typography.Link)`
   margin-bottom: 5px;
   font-size: 16px;
   font-weight: 500;
-  color: white;
 `;
 
 function RoomList() {
-  const handleAddRoom = () => {
-   
-  };
+  const handleAddRoom = () => {};
 
   return (
     <Collapse ghost defaultActiveKey={[1]}>

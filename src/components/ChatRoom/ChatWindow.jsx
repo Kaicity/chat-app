@@ -56,7 +56,10 @@ const ContentStyled = styled.div`
   justify-content: flex-end;
 `;
 
-const MessageListStyled = styled.div``;
+const MessageListStyled = styled.div`
+  max-height: 100%;
+  overflow-y: auto;
+`;
 
 const FormStyled = styled(Form)`
   display: flex;
