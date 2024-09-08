@@ -3,7 +3,7 @@ import { Collapse, Typography, Button } from "antd";
 import styled from "styled-components";
 import { PlusCircleOutlined } from "@ant-design/icons";
 import { AuthContext } from "../../Context/AuthProvider";
-import UseFirestore from "../../hooks/useFirestore";
+import UseFirestore from "../../hooks/UseFirestore";
 
 const { Panel } = Collapse;
 
