@@ -5,7 +5,11 @@ import RoomList from "./RoomList";
 import styled from "styled-components";
 
 const SidebarStyle = styled.div`
-  background: linear-gradient(to bottom, #614385, #516395);
+  background: linear-gradient(
+    135deg,
+    rgba(75, 0, 130, 0.8),
+    rgba(109, 43, 119, 0.8)
+  );
   height: 100vh;
 `;
 

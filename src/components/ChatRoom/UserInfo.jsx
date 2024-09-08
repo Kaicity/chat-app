@@ -1,6 +1,10 @@
 import { Avatar, Button, Typography } from "antd";
 import styled from "styled-components";
 import { getAuth, signOut } from "firebase/auth";
+import { useContext, useEffect } from "react";
+import { db } from "../../firebase/config";
+import { getAllDocuments } from "../../firebase/service";
+import { AuthContext } from "../../Context/AuthProvider";
 
 const WrapperStyle = styled.div`
   display: flex;
@@ -35,20 +39,23 @@ const WrapperStyle = styled.div`
 `;
 
 function UserInfo() {
-
   const handleLogout = () => {
     const auth = getAuth();
     signOut(auth);
   };
 
+  const user = useContext(AuthContext);
+  const { displayName, photoURL } = user;
+
+  console.log({ user });
+
   return (
     <WrapperStyle>
       <div className="user-container">
-        <Avatar
-          size={40}
-          src="https://avatars.githubusercontent.com/u/80609391?v=4"
-        />
-        <Typography.Text className="username">THONGULAR</Typography.Text>
+        <Avatar size={40} src={photoURL}>
+          {!photoURL && displayName?.charAt(0).toUpperCase()}
+        </Avatar>
+        <Typography.Text className="username">{displayName}</Typography.Text>
       </div>
       <Button ghost className="btn-logout" onClick={handleLogout}>
         Đăng xuất

@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useContext, useMemo } from "react";
 import { Collapse, Typography, Button } from "antd";
 import styled from "styled-components";
 import { PlusCircleOutlined } from "@ant-design/icons";
+import { AuthContext } from "../../Context/AuthProvider";
+import UseFirestore from "../../hooks/useFirestore";
 
 const { Panel } = Collapse;
 
@@ -29,14 +31,34 @@ const TypographyStyled = styled(Typography.Link)`
 `;
 
 function RoomList() {
+  const user = useContext(AuthContext);
+  const { uid } = user;
+
+  // Cau truc cua mot collection room
+  // name: 'room-name'
+  // desscription: 'mo ta'
+  // member : '[user1, user2]'
+
+  const roomsCondition = useMemo(() => {
+    return {
+      fieldName: "members",
+      operator: "array-contains",
+      compareValue: uid,
+    };
+  }, [uid]);
+
+  const rooms = UseFirestore("rooms", roomsCondition);
+
+  console.log({ rooms });
+
   const handleAddRoom = () => {};
 
   return (
     <Collapse ghost defaultActiveKey={[1]}>
       <PanelStyled header="Danh sách các phòng" key="1">
-        <TypographyStyled>Phòng 1</TypographyStyled>
-        <TypographyStyled>Phòng 2</TypographyStyled>
-        <TypographyStyled>Phòng 3</TypographyStyled>
+        {rooms.map((room) => (
+          <TypographyStyled key={room.id}>{room.name}</TypographyStyled>
+        ))}
         <Button
           type="text"
           icon={<PlusCircleOutlined />}

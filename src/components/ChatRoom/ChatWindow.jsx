@@ -1,4 +1,4 @@
-import { UserAddOutlined } from "@ant-design/icons";
+import { SendOutlined, UserAddOutlined } from "@ant-design/icons";
 import React from "react";
 import styled from "styled-components";
 import { Avatar, Button, Form, Input, Tooltip } from "antd";
@@ -40,7 +40,7 @@ const ButtonGroupStyled = styled.div`
   }
 
   .avatar-group {
-    gap: 10px;
+    
   }
 `;
 
@@ -95,7 +95,11 @@ function ChatWindow() {
           >
             Mời bạn bè
           </Button>
-          <Avatar.Group size="small" maxCount={2} className="avatar-group">
+          <Avatar.Group
+            size="small"
+            max={{ count: 2 }}
+            className="avatar-group"
+          >
             <Tooltip className="tooltip" title="Tuấn Trần">
               <Avatar
                 className="avatar"
@@ -159,7 +163,7 @@ function ChatWindow() {
           <Form.Item>
             <Input type="text" name="message" autoComplete="off" />
           </Form.Item>
-          <Button htmlType="submit">Gửi</Button>
+          <Button icon={<SendOutlined />} htmlType="submit"></Button>
         </FormStyled>
       </ContentStyled>
     </WrapperStyled>

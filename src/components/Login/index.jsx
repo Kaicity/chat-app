@@ -1,9 +1,17 @@
-import React from "react";
-import { Row, Col, Typography, Avatar, Card } from "antd";
-import { Form, Input, Button } from "antd";
+import React, { useState } from "react";
+import {
+  Row,
+  Col,
+  Typography,
+  Avatar,
+  Card,
+  Form,
+  Input,
+  Button,
+  Divider,
+} from "antd";
 import { PhoneOutlined } from "@ant-design/icons";
-import { useState } from "react";
-import { Divider } from "antd";
+
 import {
   getAuth,
   FacebookAuthProvider,
@@ -12,18 +20,20 @@ import {
   signInWithPhoneNumber,
   RecaptchaVerifier,
 } from "firebase/auth";
-import app from "../../firebase/config";
+import app, { db } from "../../firebase/config";
 import styled from "styled-components";
 import facebook from "../../assets/facebook.png";
 import google from "../../assets/google.png";
+import { addDocument } from "../../firebase/service";
 
-// Replace the existing fbProvider and auth declarations
+// Initialize Firebase authentication
 const auth = getAuth(app);
 const fbProvider = new FacebookAuthProvider();
 const googleProvider = new GoogleAuthProvider();
 
 export default function Login() {
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleLoginWithFacebook = async () => {
     await signInWithPopup(auth, fbProvider).then((result) => {
@@ -32,9 +42,22 @@ export default function Login() {
   };
 
   const handleLoginWithGoogle = async () => {
-    await signInWithPopup(auth, googleProvider).then((result) => {
-      console.log({ result });
-    });
+    const result = await signInWithPopup(auth, googleProvider);
+    const user = result.user;
+    const providerId = user.providerData[0].providerId;
+
+    if (user.emailVerified) {
+      const { displayName, email, photoURL, uid } = user;
+
+      //Save Document
+      addDocument(db, "user", {
+        displayName,
+        email,
+        photoURL,
+        uid,
+        providerId,
+      });
+    }
   };
 
   const handleLoginWithPhoneNumber = async () => {
@@ -58,7 +81,6 @@ export default function Login() {
       }
 
       const appVerifier = window.recaptchaVerifier;
-
       const confirmationResult = await signInWithPhoneNumber(
         auth,
         formattedPhoneNumber,
@@ -72,13 +94,11 @@ export default function Login() {
       if (verificationCode) {
         const result = await confirmationResult.confirm(verificationCode);
         console.log("User signed in:", result.user);
-        // You can now redirect the user or update your app's state
       } else {
         console.log("Verification cancelled");
       }
     } catch (error) {
       console.error("Error during phone authentication:", error);
-      // Handle specific error cases here
     } finally {
       setLoading(false);
     }
@@ -86,23 +106,27 @@ export default function Login() {
 
   const ButtonsStyle = styled.div`
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    gap: 8px;
+    @media (min-width: 576px) {
+      flex-direction: row;
+      justify-content: space-between;
+    }
   `;
 
-  const [loading, setLoading] = useState(false);
-
   return (
-    <Row justify={"center"} align={"middle"} style={{ height: "100vh" }}>
-      <Col xs={22} sm={18} md={14} lg={10} xl={5}>
+    <Row justify="center" align="middle" style={{ height: "100vh" }}>
+      <Col xs={22} sm={18} md={14} lg={10} xl={8}>
         <Card
           style={{
             padding: 20,
             backgroundColor: "var(--primary-color)",
             width: "100%",
+            borderRadius: 8,
           }}
         >
           <Avatar
-            style={{ display: "block", margin: "0 auto", marginBottom: 20 }}
+            style={{ display: "block", margin: "0 auto 20px auto" }}
             size={64}
             src="https://avatars.githubusercontent.com/u/80609391?v=4"
           />
@@ -139,7 +163,7 @@ export default function Login() {
                 size="large"
                 style={{ width: "100%", marginBottom: 10 }}
                 loading={loading}
-                htmlType="submit"
+                htmlType="button"
                 onClick={handleLoginWithPhoneNumber}
               >
                 Đăng nhập với số điện thoại
@@ -154,7 +178,6 @@ export default function Login() {
                 fontWeight: "normal",
                 color: "#999",
               }}
-              level={2}
             >
               Hoặc đăng nhập với
             </Typography.Text>
@@ -172,10 +195,9 @@ export default function Login() {
                 alignItems: "center",
                 justifyContent: "center",
                 flex: 1,
-                marginRight: "8px",
               }}
             >
-              <img src={facebook} alt="" width={24} height={24} />
+              <img src={facebook} alt="Facebook" width={24} height={24} />
               Facebook
             </Button>
 
@@ -190,10 +212,9 @@ export default function Login() {
                 alignItems: "center",
                 justifyContent: "center",
                 flex: 1,
-                marginLeft: "8px",
               }}
             >
-              <img src={google} alt="" width={24} height={24} />
+              <img src={google} alt="Google" width={24} height={24} />
               Google
             </Button>
           </ButtonsStyle>
