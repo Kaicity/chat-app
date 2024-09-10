@@ -3,6 +3,7 @@ import React from "react";
 import styled from "styled-components";
 import { Avatar, Button, Form, Input, Tooltip } from "antd";
 import Message from "./Message";
+import bgImage from "../../assets/bggif.gif";
 
 const HeaderStyled = styled.div`
   display: flex;
@@ -40,12 +41,12 @@ const ButtonGroupStyled = styled.div`
   }
 
   .avatar-group {
-    
   }
 `;
 
 const WrapperStyled = styled.div`
   height: 98vh;
+  background-image: url(${bgImage});
 `;
 
 const ContentStyled = styled.div`
@@ -100,7 +101,7 @@ function ChatWindow() {
             max={{ count: 2 }}
             className="avatar-group"
           >
-            <Tooltip className="tooltip" title="Tuấn Trần">
+            <Tooltip className="tooltip" title="Hoàng David">
               <Avatar
                 className="avatar"
                 src="https://avatars.githubusercontent.com/u/110616304?s=80&v=4m"
@@ -132,28 +133,28 @@ function ChatWindow() {
         <MessageListStyled>
           <Message
             text="Hello"
-            displayName="Tuấn Trần"
+            displayName="Hoàng David"
             createdAt="12:00"
             photoURL="https://avatars.githubusercontent.com/u/110616304?s=80&v=4"
           />
 
           <Message
             text="Hello"
-            displayName="Tuấn Trần"
+            displayName="Hoàng David"
             createdAt="12:00"
             photoURL="https://avatars.githubusercontent.com/u/110616304?s=80&v=4"
           />
 
           <Message
             text="Hello"
-            displayName="Tuấn Trần"
+            displayName="Hoàng David"
             createdAt="12:00"
             photoURL="https://avatars.githubusercontent.com/u/110616304?s=80&v=4"
           />
 
           <Message
             text="Hello"
-            displayName="Tuấn Trần"
+            displayName="Hoàng David"
             createdAt="12:00"
             photoURL="https://avatars.githubusercontent.com/u/110616304?s=80&v=4"
           />

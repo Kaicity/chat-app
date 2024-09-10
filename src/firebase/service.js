@@ -1,4 +1,4 @@
-import { doc, setDoc, getDoc, getDocs, collection } from "../firebase/config";
+import { doc, setDoc, getDocs, collection, addDoc } from "../firebase/config";
 import { Timestamp } from "firebase/firestore";
 
 export const addDocument = async (db, collection, data) => {
@@ -14,6 +14,18 @@ export const addDocument = async (db, collection, data) => {
       },
       { merge: true } // su dung merge cho update khi document nay ton tai
     );
+  } catch (error) {
+    console.error("Error when saving with data", error);
+  }
+};
+
+export const addDocumentGenerateAutoId = async (db, collectionName, data) => {
+  try {
+    // Use addDoc to add a new document with an auto-generated ID
+    await addDoc(collection(db, collectionName), {
+      ...data,
+      createdAt: Timestamp.now(),
+    });
   } catch (error) {
     console.error("Error when saving with data", error);
   }

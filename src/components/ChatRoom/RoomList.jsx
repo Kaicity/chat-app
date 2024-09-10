@@ -2,8 +2,7 @@ import React, { useContext, useMemo } from "react";
 import { Collapse, Typography, Button } from "antd";
 import styled from "styled-components";
 import { PlusCircleOutlined } from "@ant-design/icons";
-import { AuthContext } from "../../Context/AuthProvider";
-import UseFirestore from "../../hooks/UseFirestore";
+import { AppContext } from "../../Context/AppProvider";
 
 const { Panel } = Collapse;
 
@@ -31,27 +30,11 @@ const TypographyStyled = styled(Typography.Link)`
 `;
 
 function RoomList() {
-  const user = useContext(AuthContext);
-  const { uid } = user;
+  const { rooms, setIsAddRoomVisible } = useContext(AppContext);
 
-  // Cau truc cua mot collection room
-  // name: 'room-name'
-  // desscription: 'mo ta'
-  // member : '[user1, user2]'
-
-  const roomsCondition = useMemo(() => {
-    return {
-      fieldName: "members",
-      operator: "array-contains",
-      compareValue: uid,
-    };
-  }, [uid]);
-
-  const rooms = UseFirestore("rooms", roomsCondition);
-
-  console.log({ rooms });
-
-  const handleAddRoom = () => {};
+  const handleAddRoom = () => {
+    setIsAddRoomVisible(true);
+  };
 
   return (
     <Collapse ghost defaultActiveKey={[1]}>
