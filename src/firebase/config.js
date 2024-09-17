@@ -12,7 +12,9 @@ import {
   where,
   orderBy,
   onSnapshot,
-  addDoc
+  addDoc,
+  limit,
+  updateDoc,
 } from "firebase/firestore";
 import { getAnalytics } from "firebase/analytics";
 
@@ -32,7 +34,7 @@ const app = initializeApp(firebaseConfig);
 
 const auth = getAuth(app);
 const db = getFirestore(app);
-7
+7;
 if (
   window.location.hostname === "127.0.0.1" ||
   window.location.hostname === "localhost"
@@ -54,7 +56,9 @@ export {
   where,
   orderBy,
   onSnapshot,
-  addDoc
+  addDoc,
+  limit,
+  updateDoc,
 };
 
 export default app;

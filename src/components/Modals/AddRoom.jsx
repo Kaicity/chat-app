@@ -5,7 +5,7 @@ import { addDocumentGenerateAutoId } from "../../firebase/service";
 import { db } from "../../firebase/config";
 import { AuthContext } from "../../Context/AuthProvider";
 
-export default function () {
+export default function AddRoom() {
   const { isAddRoomVisible, setIsAddRoomVisible } = useContext(AppContext);
   const user = useContext(AuthContext);
   const [form] = Form.useForm();

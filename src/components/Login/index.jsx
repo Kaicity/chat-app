@@ -24,7 +24,7 @@ import app, { db } from "../../firebase/config";
 import styled from "styled-components";
 import facebook from "../../assets/facebook.png";
 import google from "../../assets/google.png";
-import { addDocument } from "../../firebase/service";
+import { addDocument, generateKeywords } from "../../firebase/service";
 import bgLoginImage from "../../assets/chatbg.jpg";
 
 // Initialize Firebase authentication
@@ -49,6 +49,7 @@ export default function Login() {
 
     if (user.emailVerified) {
       const { displayName, email, photoURL, uid } = user;
+      const keywords = generateKeywords(displayName);
 
       //Save Document
       addDocument(db, "user", {
@@ -57,6 +58,7 @@ export default function Login() {
         photoURL,
         uid,
         providerId,
+        keywords,
       });
     }
   };

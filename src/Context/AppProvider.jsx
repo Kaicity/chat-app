@@ -10,6 +10,7 @@ export default function AppProvider({ children }) {
 
   //using modal every component can using everywhere
   const [isAddRoomVisible, setIsAddRoomVisible] = useState(false);
+  const [isInviteMemberVisible, setIsInviteMemberVisible] = useState(false);
   const [selectedRoomId, setSelectedRoomId] = useState("");
 
   const roomsCondition = useMemo(() => {
@@ -22,14 +23,34 @@ export default function AppProvider({ children }) {
 
   const rooms = UseFirestore("rooms", roomsCondition);
 
+  //Duyet qua vong lap check id cuaa tung room tuong ung
+  const selectedRoom = useMemo(
+    () => rooms.find((room) => room.id === selectedRoomId) || {},
+    [rooms, selectedRoomId]
+  );
+
+  const usersCondition = useMemo(() => {
+    return {
+      fieldName: "uid",
+      operator: "in",
+      compareValue: selectedRoom.members,
+    };
+  }, [selectedRoom.members]);
+
+  const members = UseFirestore("user", usersCondition);
+
   return (
     <AppContext.Provider
       value={{
         rooms,
+        members,
+        selectedRoom,
         isAddRoomVisible,
         setIsAddRoomVisible,
         selectedRoomId,
         setSelectedRoomId,
+        isInviteMemberVisible,
+        setIsInviteMemberVisible,
       }}
     >
       {children}

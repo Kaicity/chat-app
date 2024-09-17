@@ -1,10 +1,10 @@
 import { SendOutlined, UserAddOutlined } from "@ant-design/icons";
 import React, { useContext, useMemo } from "react";
 import styled from "styled-components";
-import { Avatar, Button, Form, Input, Tooltip } from "antd";
+import { Alert, Avatar, Button, Form, Input, Tooltip } from "antd";
 import Message from "./Message";
 import bgImage from "../../assets/bggif.gif";
-import AppProvider, { AppContext } from "../../Context/AppProvider";
+import { AppContext } from "../../Context/AppProvider";
 
 const HeaderStyled = styled.div`
   display: flex;
@@ -77,111 +77,110 @@ const FormStyled = styled(Form)`
 `;
 
 function ChatWindow() {
-  const { rooms, selectedRoomId } = useContext(AppContext);
-
-  console.log({ rooms, selectedRoomId });
+  const { selectedRoom, members, setIsInviteMemberVisible } =
+    useContext(AppContext);
 
   const handleSendMessage = (values) => {
     console.log(values);
   };
 
-  //Duyet qua vong lap check id cuaa tung room tuong ung
-  const selectedRoom = useMemo(
-    () => rooms.find((room) => room.id === selectedRoomId),
-    [rooms, selectedRoomId]
-  );
+  const handleInviteMember = () => {
+    setIsInviteMemberVisible(true);
+  };
 
   return (
     <WrapperStyled>
-      <HeaderStyled>
-        <div className="header-info">
-          <p className="header-title">
-            {selectedRoom ? selectedRoom.name : ""}
-          </p>
-          <span className="header-desc">
-            {selectedRoom ? selectedRoom.description : ""}
-          </span>
-        </div>
+      {selectedRoom.id ? (
+        <>
+          <HeaderStyled>
+            <div className="header-info">
+              <p className="header-title">
+                {selectedRoom ? selectedRoom.name : ""}
+              </p>
+              <span className="header-desc">
+                {selectedRoom ? selectedRoom.description : ""}
+              </span>
+            </div>
 
-        <ButtonGroupStyled>
-          <Button
-            type="primary"
-            className="add-user"
-            icon={<UserAddOutlined />}
-          >
-            Mời bạn bè
-          </Button>
-          <Avatar.Group
-            size="small"
-            max={{ count: 2 }}
-            className="avatar-group"
-          >
-            <Tooltip className="tooltip" title="Hoàng David">
-              <Avatar
-                className="avatar"
-                src="https://avatars.githubusercontent.com/u/110616304?s=80&v=4m"
+            <ButtonGroupStyled>
+              <Button
+                type="primary"
+                className="add-user"
+                icon={<UserAddOutlined />}
+                onClick={handleInviteMember}
+              >
+                Mời bạn bè
+              </Button>
+              <Avatar.Group
+                size="small"
+                max={{ count: 2 }}
+                className="avatar-group"
+              >
+                {members.map((member) => (
+                  <Tooltip
+                    className="tooltip"
+                    title={member.displayName}
+                    key={member.id}
+                  >
+                    <Avatar className="avatar" src={member.photoURL}>
+                      {member.photoURL
+                        ? ""
+                        : member.displayName?.charAt(0)?.toUpperCase()}
+                    </Avatar>
+                  </Tooltip>
+                ))}
+              </Avatar.Group>
+            </ButtonGroupStyled>
+          </HeaderStyled>
+
+          <ContentStyled>
+            <MessageListStyled>
+              <Message
+                text="Hello"
+                displayName="Hoàng David"
+                createdAt="12:00"
+                photoURL="https://avatars.githubusercontent.com/u/110616304?s=80&v=4"
               />
-            </Tooltip>
-            <Tooltip className="tooltip" title="Tiến">
-              <Avatar
-                className="avatar"
-                src="https://avatars.githubusercontent.com/u/170062471?s=80&v=4"
+
+              <Message
+                text="Hello"
+                displayName="Hoàng David"
+                createdAt="12:00"
+                photoURL="https://avatars.githubusercontent.com/u/110616304?s=80&v=4"
               />
-            </Tooltip>
-            <Tooltip className="tooltip" title="Thongular">
-              <Avatar
-                className="avatar"
-                src="https://avatars.githubusercontent.com/u/93094572?v=4"
+
+              <Message
+                text="Hello"
+                displayName="Hoàng David"
+                createdAt="12:00"
+                photoURL="https://avatars.githubusercontent.com/u/110616304?s=80&v=4"
               />
-            </Tooltip>
-            <Tooltip className="tooltip" title="Thảo">
-              <Avatar
-                className="avatar"
-                src="https://avatars.githubusercontent.com/u/80609391?s=16&v=4"
+
+              <Message
+                text="Hello"
+                displayName="Hoàng David"
+                createdAt="12:00"
+                photoURL="https://avatars.githubusercontent.com/u/110616304?s=80&v=4"
               />
-            </Tooltip>
-          </Avatar.Group>
-        </ButtonGroupStyled>
-      </HeaderStyled>
+            </MessageListStyled>
 
-      <ContentStyled>
-        <MessageListStyled>
-          <Message
-            text="Hello"
-            displayName="Hoàng David"
-            createdAt="12:00"
-            photoURL="https://avatars.githubusercontent.com/u/110616304?s=80&v=4"
-          />
-
-          <Message
-            text="Hello"
-            displayName="Hoàng David"
-            createdAt="12:00"
-            photoURL="https://avatars.githubusercontent.com/u/110616304?s=80&v=4"
-          />
-
-          <Message
-            text="Hello"
-            displayName="Hoàng David"
-            createdAt="12:00"
-            photoURL="https://avatars.githubusercontent.com/u/110616304?s=80&v=4"
-          />
-
-          <Message
-            text="Hello"
-            displayName="Hoàng David"
-            createdAt="12:00"
-            photoURL="https://avatars.githubusercontent.com/u/110616304?s=80&v=4"
-          />
-        </MessageListStyled>
-
-        <FormStyled size="large" onFinish={handleSendMessage}>
-          <Form.Item>
-            <Input type="text" name="message" autoComplete="off" />
-          </Form.Item>
-          <Button icon={<SendOutlined />} htmlType="submit"></Button>
-        </FormStyled>
-      </ContentStyled>
+            <FormStyled size="large" onFinish={handleSendMessage}>
+              <Form.Item>
+                <Input type="text" name="message" autoComplete="off" />
+              </Form.Item>
+              <Button icon={<SendOutlined />} htmlType="submit"></Button>
+            </FormStyled>
+          </ContentStyled>
+        </>
+      ) : (
+        <Alert
+          message="Hãy tạo và chọn phòng của bạn"
+          type="info"
+          showIcon
+          style={{ margin: 5 }}
+          closable
+        />
+      )}
     </WrapperStyled>
   );
 }
