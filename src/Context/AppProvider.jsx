@@ -1,6 +1,4 @@
 import React, { createContext, useMemo, useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Spin } from "antd";
 import { AuthContext } from "./AuthProvider";
 import UseFirestore from "../hooks/UseFirestore";
 
@@ -12,6 +10,7 @@ export default function AppProvider({ children }) {
 
   //using modal every component can using everywhere
   const [isAddRoomVisible, setIsAddRoomVisible] = useState(false);
+  const [selectedRoomId, setSelectedRoomId] = useState("");
 
   const roomsCondition = useMemo(() => {
     return {
@@ -25,7 +24,13 @@ export default function AppProvider({ children }) {
 
   return (
     <AppContext.Provider
-      value={{ rooms, isAddRoomVisible, setIsAddRoomVisible }}
+      value={{
+        rooms,
+        isAddRoomVisible,
+        setIsAddRoomVisible,
+        selectedRoomId,
+        setSelectedRoomId,
+      }}
     >
       {children}
     </AppContext.Provider>

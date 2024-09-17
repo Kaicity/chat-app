@@ -1,9 +1,10 @@
 import { SendOutlined, UserAddOutlined } from "@ant-design/icons";
-import React from "react";
+import React, { useContext, useMemo } from "react";
 import styled from "styled-components";
 import { Avatar, Button, Form, Input, Tooltip } from "antd";
 import Message from "./Message";
 import bgImage from "../../assets/bggif.gif";
+import AppProvider, { AppContext } from "../../Context/AppProvider";
 
 const HeaderStyled = styled.div`
   display: flex;
@@ -76,16 +77,30 @@ const FormStyled = styled(Form)`
 `;
 
 function ChatWindow() {
+  const { rooms, selectedRoomId } = useContext(AppContext);
+
+  console.log({ rooms, selectedRoomId });
+
   const handleSendMessage = (values) => {
     console.log(values);
   };
+
+  //Duyet qua vong lap check id cuaa tung room tuong ung
+  const selectedRoom = useMemo(
+    () => rooms.find((room) => room.id === selectedRoomId),
+    [rooms, selectedRoomId]
+  );
 
   return (
     <WrapperStyled>
       <HeaderStyled>
         <div className="header-info">
-          <p className="header-title">Phòng Chat 1</p>
-          <span className="header-desc">Đây là phòng Chat 1</span>
+          <p className="header-title">
+            {selectedRoom ? selectedRoom.name : ""}
+          </p>
+          <span className="header-desc">
+            {selectedRoom ? selectedRoom.description : ""}
+          </span>
         </div>
 
         <ButtonGroupStyled>

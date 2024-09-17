@@ -30,17 +30,24 @@ const TypographyStyled = styled(Typography.Link)`
 `;
 
 function RoomList() {
-  const { rooms, setIsAddRoomVisible } = useContext(AppContext);
+  const { rooms, setIsAddRoomVisible, setSelectedRoomId } =
+    useContext(AppContext);
 
   const handleAddRoom = () => {
     setIsAddRoomVisible(true);
+  };
+
+  const handleSelectedRoom = (id) => {
+    return () => setSelectedRoomId(id);
   };
 
   return (
     <Collapse ghost defaultActiveKey={[1]}>
       <PanelStyled header="Danh sách các phòng" key="1">
         {rooms.map((room) => (
-          <TypographyStyled key={room.id}>{room.name}</TypographyStyled>
+          <TypographyStyled key={room.id} onClick={handleSelectedRoom(room.id)}>
+            {room.name}
+          </TypographyStyled>
         ))}
         <Button
           type="text"
