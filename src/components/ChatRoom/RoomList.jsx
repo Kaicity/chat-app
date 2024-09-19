@@ -13,11 +13,17 @@ const PanelStyled = styled(Panel)`
       color: var(--text-color-primary);
     }
     .ant-collapse-content-box {
-      padding: 0 40px;
+      padding: 0 20px;
     }
     .add-room {
       padding: 0;
       color: var(--text-color-primary);
+    }
+
+    @media (max-width: 768px) {
+      .ant-collapse-content-box {
+        padding: 0 10px;
+      }
     }
   }
 `;
@@ -27,6 +33,24 @@ const TypographyStyled = styled(Typography.Link)`
   margin-bottom: 5px;
   font-size: 16px;
   font-weight: 500;
+
+  @media (max-width: 768px) {
+    font-size: 14px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 12px;
+  }
+`;
+
+const ButtonStyled = styled(Button)`
+  @media (max-width: 768px) {
+    font-size: 14px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 12px;
+  }
 `;
 
 function RoomList() {
@@ -49,14 +73,14 @@ function RoomList() {
             {room.name}
           </TypographyStyled>
         ))}
-        <Button
+         <ButtonStyled
           type="text"
           icon={<PlusCircleOutlined />}
           className="add-room"
           onClick={handleAddRoom}
         >
           Tạo phòng
-        </Button>
+        </ButtonStyled>
       </PanelStyled>
     </Collapse>
   );

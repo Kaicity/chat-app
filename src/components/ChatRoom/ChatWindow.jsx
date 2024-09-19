@@ -34,6 +34,11 @@ const HeaderStyled = styled.div`
       font-size: 12px;
     }
   }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 `;
 
 const ButtonGroupStyled = styled.div`
@@ -45,7 +50,8 @@ const ButtonGroupStyled = styled.div`
     cursor: pointer;
   }
 
-  .avatar-group {
+  @media (max-width: 768px) {
+    margin-left: auto;
   }
 `;
 
@@ -60,10 +66,14 @@ const ContentStyled = styled.div`
   flex-direction: column;
   padding: 11px;
   justify-content: flex-end;
+
+  @media (max-width: 768px) {
+    height: calc(100% - 110px);
+  }
 `;
 
 const MessageListStyled = styled.div`
-  max-height: 100%;
+  max-height: 100vh;
   overflow-y: auto;
 `;
 
@@ -144,7 +154,7 @@ function ChatWindow() {
                 icon={<UserAddOutlined />}
                 onClick={handleInviteMember}
               >
-                Mời bạn bè
+                Mời
               </Button>
               <Avatar.Group
                 size="small"
