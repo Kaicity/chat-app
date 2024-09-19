@@ -5,7 +5,7 @@ import {
   where,
   orderBy,
   onSnapshot,
-  db
+  db,
 } from "../firebase/config";
 import { useEffect } from "react";
 
