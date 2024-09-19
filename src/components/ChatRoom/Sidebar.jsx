@@ -10,7 +10,7 @@ const SidebarStyle = styled.div`
     rgba(75, 0, 130, 0.8),
     rgba(109, 43, 119, 0.8)
   );
-  height: 100vh;
+  height: 100%;
 `;
 
 function Sidebar() {

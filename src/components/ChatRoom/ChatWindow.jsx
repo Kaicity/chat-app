@@ -1,10 +1,14 @@
 import { SendOutlined, UserAddOutlined } from "@ant-design/icons";
-import React, { useContext, useMemo } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import styled from "styled-components";
 import { Alert, Avatar, Button, Form, Input, Tooltip } from "antd";
 import Message from "./Message";
-import bgImage from "../../assets/bggif.gif";
+// import bgImage from "../../assets/bggif.gif";
 import { AppContext } from "../../Context/AppProvider";
+import { addDocumentGenerateAutoId } from "../../firebase/service";
+import { db } from "../../firebase/config";
+import { AuthContext } from "../../Context/AuthProvider";
+import UseFirestore from "../../hooks/UseFirestore";
 
 const HeaderStyled = styled.div`
   display: flex;
@@ -46,8 +50,8 @@ const ButtonGroupStyled = styled.div`
 `;
 
 const WrapperStyled = styled.div`
-  height: 98vh;
-  background-image: url(${bgImage});
+  height: 100vh;
+  background-color: #242526;
 `;
 
 const ContentStyled = styled.div`
@@ -80,13 +84,44 @@ function ChatWindow() {
   const { selectedRoom, members, setIsInviteMemberVisible } =
     useContext(AppContext);
 
-  const handleSendMessage = (values) => {
-    console.log(values);
-  };
+  const user = useContext(AuthContext);
+  const { uid, photoURL, displayName } = user;
+
+  const [inputValue, setInputValue] = useState("");
+  const [form] = Form.useForm();
 
   const handleInviteMember = () => {
     setIsInviteMemberVisible(true);
   };
+
+  const handleInputChange = (e) => {
+    setInputValue(e.target.value);
+  };
+
+  const handleOnSubmit = () => {
+    addDocumentGenerateAutoId(db, "messages", {
+      text: inputValue,
+      uid,
+      photoURL,
+      displayName,
+      roomId: selectedRoom.id,
+    });
+
+    form.resetFields(["message"]);
+  };
+
+  //Kiem Tra message  co roomid = roomid phong hien tai
+  const condition = useMemo(
+    () => ({
+      fieldName: "roomId",
+      operator: "==",
+      compareValue: selectedRoom.id,
+    }),
+    [selectedRoom.id]
+  );
+
+  //Lay ra message cua user
+  const messages = UseFirestore("messages", condition);
 
   return (
     <WrapperStyled>
@@ -135,40 +170,33 @@ function ChatWindow() {
 
           <ContentStyled>
             <MessageListStyled>
-              <Message
-                text="Hello"
-                displayName="Hoàng David"
-                createdAt="12:00"
-                photoURL="https://avatars.githubusercontent.com/u/110616304?s=80&v=4"
-              />
-
-              <Message
-                text="Hello"
-                displayName="Hoàng David"
-                createdAt="12:00"
-                photoURL="https://avatars.githubusercontent.com/u/110616304?s=80&v=4"
-              />
-
-              <Message
-                text="Hello"
-                displayName="Hoàng David"
-                createdAt="12:00"
-                photoURL="https://avatars.githubusercontent.com/u/110616304?s=80&v=4"
-              />
-
-              <Message
-                text="Hello"
-                displayName="Hoàng David"
-                createdAt="12:00"
-                photoURL="https://avatars.githubusercontent.com/u/110616304?s=80&v=4"
-              />
+              {messages.map((mes) => (
+                <Message
+                  key={mes.id}
+                  text={mes.text}
+                  displayName={mes.displayName}
+                  createdAt={mes.createdAt}
+                  photoURL={mes.photoURL}
+                />
+              ))}
             </MessageListStyled>
 
-            <FormStyled size="large" onFinish={handleSendMessage}>
-              <Form.Item>
-                <Input type="text" name="message" autoComplete="off" />
+            <FormStyled size="large" form={form}>
+              <Form.Item name="message">
+                <Input
+                  onChange={handleInputChange}
+                  onPressEnter={handleOnSubmit}
+                  type="text"
+                  name="message"
+                  autoComplete="off"
+                  placeholder={`Nhập tin nhắn tới ${selectedRoom.name}`}
+                />
               </Form.Item>
-              <Button icon={<SendOutlined />} htmlType="submit"></Button>
+              <Button
+                icon={<SendOutlined />}
+                onClick={handleOnSubmit}
+                htmlType="submit"
+              ></Button>
             </FormStyled>
           </ContentStyled>
         </>
@@ -177,7 +205,7 @@ function ChatWindow() {
           message="Hãy tạo và chọn phòng của bạn"
           type="info"
           showIcon
-          style={{ margin: 5 }}
+          style={{ margin: 0, marginLeft: 5, marginRight: 5 }}
           closable
         />
       )}

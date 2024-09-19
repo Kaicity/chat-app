@@ -11,7 +11,6 @@ export default function AddRoom() {
   const [form] = Form.useForm();
 
   const handleOk = async () => {
-    //Form submit
     try {
       const formValues = await form.validateFields();
       const { uid } = user;

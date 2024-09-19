@@ -14,12 +14,17 @@ const WrapperStyle = styled.div`
   @media (max-width: 768px) {
     flex-direction: column;
     align-items: flex-start;
+    padding: 12px 0;
   }
 
   .user-container {
     display: flex;
     align-items: center;
-    margin-bottom: 10px;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: flex-center;
+    }
   }
 
   .username {
@@ -31,7 +36,8 @@ const WrapperStyle = styled.div`
 
   .btn-logout {
     @media (max-width: 768px) {
-      align-self: flex-end;
+      align-self: center;
+      margin-top: 10px;
     }
   }
 `;

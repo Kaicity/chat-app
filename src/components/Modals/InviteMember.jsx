@@ -14,8 +14,15 @@ import {
   updateDoc,
 } from "../../firebase/config";
 import { debounce } from "lodash";
+import { AuthContext } from "../../Context/AuthProvider";
 
 const { Option } = Select;
+
+// Current User
+let globalUser = {};
+
+// Current Room
+let globalRoom = "";
 
 function DebounceSelect({ fetchOption, debounceTimeout = 300, ...props }) {
   const [fetching, setFetching] = useState(false);
@@ -45,7 +52,7 @@ function DebounceSelect({ fetchOption, debounceTimeout = 300, ...props }) {
     >
       {options.map((option) => (
         <Option key={option.value} value={option.value} title={option.label}>
-          <Avatar size="small" src={option.photoURL}>
+          <Avatar size="small" src={option.photoURL} style={{ margin: 5 }}>
             {!option.photoURL && option.label?.charAt(0)?.toUpperCase()}
           </Avatar>
           {`${option.label}`}
@@ -56,6 +63,7 @@ function DebounceSelect({ fetchOption, debounceTimeout = 300, ...props }) {
 }
 
 async function fetchUserList(search) {
+  //Query User
   const userQuery = query(
     collection(db, "user"),
     where("keywords", "array-contains", search),
@@ -63,13 +71,28 @@ async function fetchUserList(search) {
     limit(20)
   );
 
+  //Query Rooms
+  const roomRef = doc(db, "rooms", globalRoom);
+
   try {
     const querySnapshot = await getDocs(userQuery);
-    return querySnapshot.docs.map((doc) => ({
-      label: doc.data().displayName,
-      value: doc.data().uid,
-      photoURL: doc.data().photoURL,
-    }));
+    const roomSnapshot = await getDoc(roomRef);
+    const members = roomSnapshot.data().members;
+
+    return querySnapshot.docs
+      .map((doc) => {
+        const data = doc.data();
+        // Khong chon tai khoan nguoi dung hien tai va cac thanh vien khac da ton tai trong phong
+        if (data.uid !== globalUser.uid && !members.includes(data.uid)) {
+          return {
+            label: data.displayName,
+            value: data.uid,
+            photoURL: data.photoURL,
+          };
+        }
+        return null;
+      })
+      .filter(Boolean);
   } catch (error) {
     console.error("Error fetching user list:", error);
     throw error;
@@ -84,26 +107,28 @@ export default function InviteMember() {
     selectedRoom,
   } = useContext(AppContext);
 
+  const user = useContext(AuthContext);
+  globalUser = user;
+
+  globalRoom = selectedRoomId;
+
   const [value, setValue] = useState([]);
   const [form] = Form.useForm();
+  const [isButtonOkModalVisible, setIsButtonModalOkVisible] = useState(true);
 
   const handleOk = async () => {
     try {
-      // Reference to the room
       const roomRef = doc(db, "rooms", selectedRoomId);
 
       // Fetch the current room data
       const roomSnapshot = await getDoc(roomRef);
-      if (!roomSnapshot.exists()) {
-        throw new Error("Room does not exist");
-      }
       const currentRoomData = roomSnapshot.data();
 
-      // Extract current members and new members
+      // Lay danh sach cac member truoc do
       const currentMembers = currentRoomData.members || [];
       const newMembers = value.map((val) => val.value);
 
-      // Update the room with new members
+      // Cap nhat lai member trong rooms
       await updateDoc(roomRef, {
         members: [...new Set([...currentMembers, ...newMembers])],
       });
@@ -121,6 +146,12 @@ export default function InviteMember() {
     setIsInviteMemberVisible(false);
   };
 
+  const onFormValuesChange = (changeValues) => {
+    // Kiem tra chon nguoi dung co chon member value thi moi duoc phep submit
+    const members = changeValues.members || [];
+    setIsButtonModalOkVisible(members.length === 0);
+  };
+
   return (
     <div>
       <Modal
@@ -130,8 +161,9 @@ export default function InviteMember() {
         onCancel={handleCancel}
         okText="Xác nhận"
         cancelText="Hủy"
+        okButtonProps={{ disabled: isButtonOkModalVisible }}
       >
-        <Form form={form} layout="vertical">
+        <Form form={form} layout="vertical" onValuesChange={onFormValuesChange}>
           <Form.Item
             name="members"
             label="Người dùng"

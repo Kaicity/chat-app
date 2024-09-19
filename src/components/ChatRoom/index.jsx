@@ -6,10 +6,10 @@ import { Row, Col } from "antd";
 export default function ChatRoom() {
   return (
     <Row>
-      <Col span={6}>
+      <Col xs={8} md={6}>
         <Sidebar />
       </Col>
-      <Col span={18}>
+      <Col xs={16} md={18}>
         <ChatWindown />
       </Col>
     </Row>
