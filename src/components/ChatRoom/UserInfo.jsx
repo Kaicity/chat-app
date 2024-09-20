@@ -23,7 +23,8 @@ const WrapperStyle = styled.div`
 
     @media (max-width: 768px) {
       flex-direction: column;
-      align-items: flex-center;
+      text-align: center;
+      margin: 0 auto;
     }
   }
 

@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { formatRelative } from "date-fns";
 
 const WrapperStyled = styled.div`
+  white-space: pre-wrap;
   margin-bottom: 10px;
   display: flex;
   width: 100%;

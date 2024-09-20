@@ -1,5 +1,5 @@
-import { SendOutlined, UserAddOutlined } from "@ant-design/icons";
-import React, { useContext, useMemo, useState } from "react";
+import { UpOutlined, UserAddOutlined } from "@ant-design/icons";
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import styled from "styled-components";
 import { Alert, Avatar, Button, Form, Input, Tooltip } from "antd";
 import Message from "./Message";
@@ -70,6 +70,25 @@ const ContentStyled = styled.div`
   @media (max-width: 768px) {
     height: calc(100% - 110px);
   }
+
+  /* Tùy chỉnh thanh cuộn */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #3a3b3c;
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #676767;
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #a9a9a9;
+  }
 `;
 
 const MessageListStyled = styled.div`
@@ -80,13 +99,49 @@ const MessageListStyled = styled.div`
 const FormStyled = styled(Form)`
   display: flex;
   align-items: center;
-  padding: 2px 2px 2px 0;
-  border-radius: 2px;
-  gap: 10px;
+  padding: 12px 4px;
+  border-top: 1px solid #ccc;
+`;
 
-  .ant-form-item {
-    flex: 1;
-    margin: 0;
+const InputWrapperStyled = styled.div`
+  display: flex;
+  align-items: center;
+  flex: 1;
+  position: relative;
+
+  .submit-button {
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    border: none;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-radius: 20px;
+    background-color: #676767;
+  }
+`;
+
+const InputStyled = styled(Input.TextArea)`
+  border: none;
+  border-radius: 20px;
+  padding: 8px 16px;
+  width: 100%;
+  color: #fff;
+  background-color: #3a3b3c;
+
+  &:focus {
+    outline: none;
+    box-shadow: none;
+    background-color: #3a3b3c;
+  }
+
+  &:hover {
+    background-color: #3a3b3c;
+  }
+
+  &::placeholder {
+    color: #a9a9a9;
   }
 `;
 
@@ -100,6 +155,8 @@ function ChatWindow() {
   const [inputValue, setInputValue] = useState("");
   const [form] = Form.useForm();
 
+  const messageListRef = useRef(null);
+
   const handleInviteMember = () => {
     setIsInviteMemberVisible(true);
   };
@@ -109,13 +166,15 @@ function ChatWindow() {
   };
 
   const handleOnSubmit = () => {
-    addDocumentGenerateAutoId(db, "messages", {
-      text: inputValue,
-      uid,
-      photoURL,
-      displayName,
-      roomId: selectedRoom.id,
-    });
+    if (inputValue) {
+      addDocumentGenerateAutoId(db, "messages", {
+        text: inputValue,
+        uid,
+        photoURL,
+        displayName,
+        roomId: selectedRoom.id,
+      });
+    }
 
     form.resetFields(["message"]);
   };
@@ -132,6 +191,24 @@ function ChatWindow() {
 
   //Lay ra message cua user
   const messages = UseFirestore("messages", condition);
+
+  //Cho phep shirt enter xuong dong text
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault(); // Ngăn chặn hành vi mặc định
+      handleOnSubmit();
+    }
+  };
+
+  const scrollToBottomNewMessages = () => {
+    if (messageListRef.current) {
+      messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
+    }
+  };
+
+  useEffect(() => {
+    scrollToBottomNewMessages();
+  }, [messages]);
 
   return (
     <WrapperStyled>
@@ -179,7 +256,7 @@ function ChatWindow() {
           </HeaderStyled>
 
           <ContentStyled>
-            <MessageListStyled>
+            <MessageListStyled ref={messageListRef}>
               {messages.map((mes) => (
                 <Message
                   key={mes.id}
@@ -191,22 +268,26 @@ function ChatWindow() {
               ))}
             </MessageListStyled>
 
+            {/* INPUT CHAT */}
             <FormStyled size="large" form={form}>
-              <Form.Item name="message">
-                <Input
-                  onChange={handleInputChange}
-                  onPressEnter={handleOnSubmit}
-                  type="text"
-                  name="message"
-                  autoComplete="off"
-                  placeholder={`Nhập tin nhắn tới ${selectedRoom.name}`}
+              <InputWrapperStyled>
+                <Form.Item name="message" style={{ flex: 1, margin: 0 }}>
+                  <InputStyled
+                    onChange={handleInputChange}
+                    onKeyDown={handleKeyDown}
+                    autoComplete="off"
+                    placeholder={`Nhập tin nhắn tới ${selectedRoom.name}`}
+                    rows={1}
+                    autoSize={{ minRows: 1, maxRows: 5 }}
+                  />
+                </Form.Item>
+                <Button
+                  icon={<UpOutlined />}
+                  onClick={handleOnSubmit}
+                  htmlType="submit"
+                  className="submit-button"
                 />
-              </Form.Item>
-              <Button
-                icon={<SendOutlined />}
-                onClick={handleOnSubmit}
-                htmlType="submit"
-              ></Button>
+              </InputWrapperStyled>
             </FormStyled>
           </ContentStyled>
         </>
