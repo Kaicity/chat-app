@@ -1,45 +1,48 @@
 import React, { useState } from "react";
-import {
-  Row,
-  Col,
-  Typography,
-  Avatar,
-  Card,
-  Form,
-  Input,
-  Button,
-  Divider,
-} from "antd";
-import { PhoneOutlined } from "@ant-design/icons";
+import { Row, Col, Typography, Avatar, Card, Button, Divider } from "antd";
 
 import {
   getAuth,
   FacebookAuthProvider,
   signInWithPopup,
   GoogleAuthProvider,
-  signInWithPhoneNumber,
-  RecaptchaVerifier,
+  OAuthProvider,
 } from "firebase/auth";
 import app, { db } from "../../firebase/config";
 import styled from "styled-components";
-import facebook from "../../assets/facebook.png";
+import apple from "../../assets/apple-logo.png";
 import google from "../../assets/google.png";
 import { addDocument, generateKeywords } from "../../firebase/service";
 import bgLoginImage from "../../assets/chatbg.jpg";
+import logoChat from "../../assets/logo_chat.jpg";
 
 // Initialize Firebase authentication
 const auth = getAuth(app);
 const fbProvider = new FacebookAuthProvider();
 const googleProvider = new GoogleAuthProvider();
+const appleProvider = new OAuthProvider("apple.com");
 
 export default function Login() {
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [loading, setLoading] = useState(false);
+  const handleLoginWithApple = async () => {
+    const result = await signInWithPopup(auth, appleProvider);
+    console.log({ result });
+    const user = result.user;
+    const providerId = user.providerData[0].providerId;
 
-  const handleLoginWithFacebook = async () => {
-    await signInWithPopup(auth, fbProvider).then((result) => {
-      const userInfo = result.user;
-    });
+    if (user.emailVerified) {
+      const { displayName, email, photoURL, uid } = user;
+      const keywords = generateKeywords(displayName);
+
+      //Save Document
+      addDocument(db, "user", {
+        displayName,
+        email,
+        photoURL,
+        uid,
+        providerId,
+        keywords,
+      });
+    }
   };
 
   const handleLoginWithGoogle = async () => {
@@ -60,50 +63,6 @@ export default function Login() {
         providerId,
         keywords,
       });
-    }
-  };
-
-  const handleLoginWithPhoneNumber = async () => {
-    try {
-      setLoading(true);
-      const formattedPhoneNumber = phoneNumber.startsWith("+84")
-        ? phoneNumber
-        : `+84${phoneNumber.slice(1)}`;
-
-      if (!window.recaptchaVerifier) {
-        window.recaptchaVerifier = new RecaptchaVerifier(
-          auth,
-          "recaptcha-container",
-          {
-            size: "invisible",
-            callback: (response) => {
-              console.log({ response });
-            },
-          }
-        );
-      }
-
-      const appVerifier = window.recaptchaVerifier;
-      const confirmationResult = await signInWithPhoneNumber(
-        auth,
-        formattedPhoneNumber,
-        appVerifier
-      );
-
-      const verificationCode = window.prompt(
-        "Please enter the verification code sent to your phone"
-      );
-
-      if (verificationCode) {
-        const result = await confirmationResult.confirm(verificationCode);
-        console.log("User signed in:", result.user);
-      } else {
-        console.log("Verification cancelled");
-      }
-    } catch (error) {
-      console.error("Error during phone authentication:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -137,7 +96,7 @@ export default function Login() {
             <Avatar
               style={{ display: "block", margin: "0 auto 20px auto" }}
               size={64}
-              src="https://avatars.githubusercontent.com/u/80609391?v=4"
+              src={logoChat}
             />
             <Typography.Title
               level={2}
@@ -145,40 +104,6 @@ export default function Login() {
             >
               Itmix Chat
             </Typography.Title>
-            <Form name="login">
-              <Form.Item
-                name="phoneNumber"
-                rules={[
-                  { required: true, message: "Vui lòng nhập số điện thoại!" },
-                  {
-                    pattern:
-                      /^(0|\+84)(\s|\.)?((3[2-9])|(5[689])|(7[06-9])|(8[1-689])|(9[0-46-9]))(\d)(\s|\.)?(\d{3})(\s|\.)?(\d{3})$/,
-                    message: "Vui lòng nhập số điện thoại hợp lệ!",
-                  },
-                ]}
-              >
-                <Input
-                  size="large"
-                  prefix={<PhoneOutlined />}
-                  placeholder="Nhập số điện thoại"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                />
-              </Form.Item>
-
-              <Form.Item>
-                <Button
-                  type="primary"
-                  size="large"
-                  style={{ width: "100%", marginBottom: 10 }}
-                  loading={loading}
-                  htmlType="button"
-                  onClick={handleLoginWithPhoneNumber}
-                >
-                  Đăng nhập với số điện thoại
-                </Button>
-              </Form.Item>
-            </Form>
 
             <Divider>
               <Typography.Text
@@ -188,13 +113,13 @@ export default function Login() {
                   color: "#999",
                 }}
               >
-                Hoặc đăng nhập với
+                Đăng nhập với
               </Typography.Text>
             </Divider>
 
             <ButtonsStyle>
               <Button
-                onClick={handleLoginWithFacebook}
+                onClick={handleLoginWithApple}
                 type="default"
                 size="large"
                 style={{
@@ -206,8 +131,8 @@ export default function Login() {
                   flex: 1,
                 }}
               >
-                <img src={facebook} alt="Facebook" width={24} height={24} />
-                Facebook
+                <img src={apple} alt="Apple" width={24} height={24} />
+                Apple
               </Button>
 
               <Button

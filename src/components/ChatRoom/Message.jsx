@@ -3,6 +3,18 @@ import { Avatar, Typography } from "antd";
 import styled from "styled-components";
 import { formatRelative } from "date-fns";
 
+const WrapperFullStyled = styled.div`
+  display: flex;
+  flex-direction: column;
+
+  .date {
+    display: block;
+    text-align: center;
+    font-size: 12px;
+    color: #999;
+  }
+`;
+
 const WrapperStyled = styled.div`
   white-space: pre-wrap;
   margin-bottom: 10px;
@@ -20,15 +32,23 @@ const WrapperStyled = styled.div`
     font-weight: bold;
   }
 
-  .date {
-    margin-left: 10px;
-    font-size: 12px;
-    color: #999;
-  }
-
   .content {
     color: white;
     margin-left: 5px;
+  }
+
+  .wrapper-content {
+    width: auto;
+    min-width: 50px;
+    max-width: 350px;
+    background-color: #3a3b3c;
+    padding: 8px 10px;
+    margin: 5px;
+    border-bottom-right-radius: 20px;
+    border-top-right-radius: 20px;
+    border-top-left-radius: 2px;
+    border-bottom-left-radius: 20px;
+    display: inline-block;
   }
 `;
 
@@ -47,25 +67,33 @@ function formatDate(seconds) {
 
 function Message({ text, displayName, createdAt, photoURL }) {
   return (
-    <WrapperStyled>
+    <WrapperFullStyled>
       <div>
-        <Avatar className="avatar" size="default" shape="circle" src={photoURL}>
-          {photoURL ? "" : displayName?.charAt(0)?.toUpperCase()}
-        </Avatar>
+        <Typography.Text className="date">
+          {formatDate(createdAt?.seconds)}
+        </Typography.Text>
       </div>
-
-      <div>
+      <WrapperStyled>
         <div>
-          <Typography.Text className="author">{displayName}</Typography.Text>
-          <Typography.Text className="date">
-            {formatDate(createdAt?.seconds)}
-          </Typography.Text>
+          <Avatar
+            className="avatar"
+            size="default"
+            shape="circle"
+            src={photoURL}
+          >
+            {photoURL ? "" : displayName?.charAt(0)?.toUpperCase()}
+          </Avatar>
         </div>
         <div>
-          <Typography.Text className="content">{text}</Typography.Text>
+          <div>
+            <Typography.Text className="author">{displayName}</Typography.Text>
+          </div>
+          <div className="wrapper-content">
+            <Typography.Text className="content">{text}</Typography.Text>
+          </div>
         </div>
-      </div>
-    </WrapperStyled>
+      </WrapperStyled>
+    </WrapperFullStyled>
   );
 }
 

@@ -1,4 +1,9 @@
-import { UpOutlined, UserAddOutlined } from "@ant-design/icons";
+import {
+  HeartFilled,
+  HeartOutlined,
+  UpOutlined,
+  UserAddOutlined,
+} from "@ant-design/icons";
 import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import styled from "styled-components";
 import { Alert, Avatar, Button, Form, Input, Tooltip } from "antd";
@@ -14,7 +19,7 @@ const HeaderStyled = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 16px;
+  padding: 8px;
   color: var(--text-color-primary);
   border-bottom: 1px solid var(--text-color-primary);
 
@@ -51,6 +56,7 @@ const ButtonGroupStyled = styled.div`
   }
 
   @media (max-width: 768px) {
+    margin-top: 5px;
     margin-left: auto;
   }
 `;
@@ -64,7 +70,7 @@ const ContentStyled = styled.div`
   height: calc(100% - 56px);
   display: flex;
   flex-direction: column;
-  padding: 11px;
+  padding: 8px;
   justify-content: flex-end;
 
   @media (max-width: 768px) {
@@ -110,8 +116,8 @@ const InputWrapperStyled = styled.div`
   position: relative;
 
   .submit-button {
-    width: 30px;
-    height: 30px;
+    width: 40px;
+    height: 40px;
     position: absolute;
     border: none;
     right: 10px;
@@ -120,13 +126,26 @@ const InputWrapperStyled = styled.div`
     border-radius: 20px;
     background-color: #676767;
   }
+
+  .submit-icon {
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    border: none;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-radius: 20px;
+    background-color: #676767;
+    transition: background-color 0.3s ease;
+  }
 `;
 
 const InputStyled = styled(Input.TextArea)`
   border: none;
   border-radius: 20px;
   padding: 8px 16px;
-  width: 100%;
+  width: 96%;
   color: #fff;
   background-color: #3a3b3c;
 
@@ -142,6 +161,10 @@ const InputStyled = styled(Input.TextArea)`
 
   &::placeholder {
     color: #a9a9a9;
+  }
+
+  @media (max-width: 768px) {
+    width: 75%;
   }
 `;
 
@@ -281,12 +304,24 @@ function ChatWindow() {
                     autoSize={{ minRows: 1, maxRows: 5 }}
                   />
                 </Form.Item>
-                <Button
-                  icon={<UpOutlined />}
-                  onClick={handleOnSubmit}
-                  htmlType="submit"
-                  className="submit-button"
-                />
+                {inputValue ? (
+                  <>
+                    <Button
+                      icon={<UpOutlined />}
+                      onClick={handleOnSubmit}
+                      htmlType="submit"
+                      className="submit-button"
+                    />
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      icon={<HeartFilled style={{ color: "red" }} />}
+                      htmlType="submit"
+                      className="submit-icon"
+                    />
+                  </>
+                )}
               </InputWrapperStyled>
             </FormStyled>
           </ContentStyled>
